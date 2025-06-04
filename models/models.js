@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const sousTacheSchema = new mongoose.Schema({
     _id: { type: mongoose.Schema.Types.ObjectId, auto: true },
     titre: String,
-    statut: { type: String, enum: ['en attente', 'complétée'], default: 'en attente' }
+    statut: { type: String, enum: ['en attente', 'complï¿½tï¿½e'], default: 'en attente' }
 });
 
 const commentaireSchema = new mongoose.Schema({
@@ -16,7 +16,7 @@ const tacheSchema = new mongoose.Schema({
     titre: String,
     description: String,
     dateEcheance: Date,
-    statut: { type: String, enum: ['en attente', 'complétée'], default: 'en attente' },
+    statut: { type: String, enum: ['en attente', 'complï¿½tï¿½e'], default: 'en attente' },
     utilisateurId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     etiquettes: [String],
     sousTaches: [sousTacheSchema],
