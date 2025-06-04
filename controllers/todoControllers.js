@@ -1,10 +1,10 @@
 const asyncHandler = require('express-async-handler');
-const Task = require('../models/models').Tache;
+const Task = require('../models/models').Task; // Assurez-vous que le modèle est correctement importé
 
-// Cr�er une t�che
+// Créer une tâche
 exports.createTask = asyncHandler(async (req, res) => {
-    const { titre, description, dateEcheance, etiquettes, utilisateurId } = req.body;
-    const task = await Task.create({ titre, description, dateEcheance, etiquettes, utilisateurId });
+    const { title, description, dueDate, tags, userId } = req.body;
+    const task = await Task.create({ title, description, dueDate, tags, userId });
 
     res.status(201).json({
         success: true,
@@ -13,16 +13,16 @@ exports.createTask = asyncHandler(async (req, res) => {
     });
 });
 
-// Obtenir toutes les t�ches d'un utilisateur
+// Obtenir toutes les tâches d'un utilisateur
 exports.getTasks = asyncHandler(async (req, res) => {
-    const tasks = await Task.find({ user: req.user.id });
+    const tasks = await Task.find();
     res.status(200).json({
         success: true,
         data: tasks
     });
 });
 
-// Mettre � jour une t�che
+// Mettre à jour une tâche
 exports.updateTask = asyncHandler(async (req, res) => {
     const { id } = req.params;
     const updates = req.body;
@@ -30,44 +30,44 @@ exports.updateTask = asyncHandler(async (req, res) => {
     const task = await Task.findByIdAndUpdate(id, updates, { new: true, runValidators: true });
 
     if (!task) {
-        return res.status(404).json({ success: false, message: 'Task not found' });
+        return res.status(404).json({ success: false, message: 'Tâche non trouvée' });
     }
 
     res.status(200).json({
         success: true,
         data: task,
-        message: 'Task updated successfully'
+        message: 'Tâche mise à jour avec succès'
     });
 });
 
-// Supprimer une t�che
+// Supprimer une tâche
 exports.deleteTask = asyncHandler(async (req, res) => {
     const { id } = req.params;
 
     const task = await Task.findByIdAndDelete(id);
 
     if (!task) {
-        return res.status(404).json({ success: false, message: 'Task not found' });
+        return res.status(404).json({ success: false, message: 'Tâche non trouvée' });
     }
 
     res.status(200).json({
         success: true,
-        message: 'Task deleted successfully'
+        message: 'Tâche supprimée avec succès'
     });
 });
 
-// Ajouter une sous-t�che � une t�che
+// Ajouter une sous-tâche à une tâche
 exports.addSubTask = asyncHandler(async (req, res) => {
     const { taskId } = req.params;
-    const { titre, statut } = req.body;
+    const { title, status } = req.body;
 
     const task = await Task.findById(taskId);
     if (!task) {
         return res.status(404).json({ success: false, message: 'Tâche introuvable' });
     }
 
-    const subTask = { titre, statut };
-    task.sousTaches.push(subTask);
+    const subTask = { title, status };
+    task.subTasks.push(subTask);
     await task.save();
 
     res.status(201).json({
@@ -77,7 +77,7 @@ exports.addSubTask = asyncHandler(async (req, res) => {
     });
 });
 
-// Mettre � jour une sous-t�che
+// Mettre à jour une sous-tâche
 exports.updateSubTask = asyncHandler(async (req, res) => {
     const { taskId, subTaskId } = req.params;
     const { title, description, completed } = req.body;
@@ -89,17 +89,17 @@ exports.updateSubTask = asyncHandler(async (req, res) => {
     );
 
     if (!task) {
-        return res.status(404).json({ success: false, message: 'Task or SubTask not found' });
+        return res.status(404).json({ success: false, message: 'Tâche ou sous-tâche non trouvée' });
     }
 
     res.status(200).json({
         success: true,
         data: task,
-        message: 'SubTask updated successfully'
+        message: 'Sous-tâche mise à jour avec succès'
     });
 });
 
-// Supprimer une sous-t�che
+// Supprimer une sous-tâche
 exports.deleteSubTask = asyncHandler(async (req, res) => {
     const { taskId, subTaskId } = req.params;
 
@@ -110,28 +110,28 @@ exports.deleteSubTask = asyncHandler(async (req, res) => {
     );
 
     if (!task) {
-        return res.status(404).json({ success: false, message: 'Task or SubTask not found' });
+        return res.status(404).json({ success: false, message: 'Tâche ou sous-tâche non trouvée' });
     }
 
     res.status(200).json({
         success: true,
         data: task,
-        message: 'SubTask deleted successfully'
+        message: 'Sous-tâche supprimée avec succès'
     });
 });
 
-// Ajouter un commentaire � une t�che
+// Ajouter un commentaire à une tâche
 exports.addComment = asyncHandler(async (req, res) => {
     const { taskId } = req.params;
-    const { texte, user } = req.body;
+    const { text, user } = req.body;
 
     const task = await Task.findById(taskId);
     if (!task) {
         return res.status(404).json({ success: false, message: 'Tâche introuvable' });
     }
 
-    const comment = { texte, user };
-    task.commentaires.push(comment);
+    const comment = { text, user };
+    task.comments.push(comment);
     await task.save();
 
     res.status(201).json({
